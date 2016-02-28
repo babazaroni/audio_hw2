@@ -1,0 +1,18 @@
+#Tue Dec 29 16:12:03 PST 2015
+eclipse.preferences.version=1
+environment/project/com.xmos.cdt.toolchain.1402098204/XDE_BUILD/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.1402098204/XDE_BUILD/operation=append
+environment/project/com.xmos.cdt.toolchain.1402098204/XDE_BUILD/value=true
+environment/project/com.xmos.cdt.toolchain.1402098204/XMOS_MODULE_PATH/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.1402098204/XMOS_MODULE_PATH/operation=append
+environment/project/com.xmos.cdt.toolchain.1402098204/XMOS_MODULE_PATH/value=/Users/chuck/.xmos/repos/sc_capacitive_sensing/module_capacitive_sensing\:/Users/chuck/.xmos/repos/sw_startkit_examples/module_startkit_gpio
+environment/project/com.xmos.cdt.toolchain.1402098204/append=true
+environment/project/com.xmos.cdt.toolchain.1402098204/appendContributed=true
+environment/project/com.xmos.cdt.toolchain.501825573/XDE_BUILD/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.501825573/XDE_BUILD/operation=append
+environment/project/com.xmos.cdt.toolchain.501825573/XDE_BUILD/value=true
+environment/project/com.xmos.cdt.toolchain.501825573/XMOS_MODULE_PATH/delimiter=\:
+environment/project/com.xmos.cdt.toolchain.501825573/XMOS_MODULE_PATH/operation=append
+environment/project/com.xmos.cdt.toolchain.501825573/XMOS_MODULE_PATH/value=/Users/chuck/.xmos/repos/sc_capacitive_sensing/module_capacitive_sensing\:/Users/chuck/.xmos/repos/sw_startkit_examples/module_startkit_gpio
+environment/project/com.xmos.cdt.toolchain.501825573/append=true
+environment/project/com.xmos.cdt.toolchain.501825573/appendContributed=true
