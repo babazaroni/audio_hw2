@@ -1,10 +1,11 @@
 
 #include "AK4612.h"
 
-
 i2c_block_entry init_ak4612_48k_vals [] = {
-        {REG_CONTROL_1,{TDM_MODE_1_TDM512 | MODE_23 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
-        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_NORMAL_SPEED_MODE | ACKS_DISABLE | DIV_2}}
+        {REG_PM_1,{0x0E | RSTN_LOW}},
+        {REG_CONTROL_1,{MODE_23 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
+        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_NORMAL_SPEED_MODE | ACKS_DISABLE | DIV_2}},
+        {REG_PM_1,{0x0E | RSTN_HIGH}},
 //        {0x0B,{0}},
 //        {0x0C,{0}},
 //        {0x0D,{0}},
@@ -16,8 +17,10 @@ i2c_block_entry init_ak4612_48k_vals [] = {
 };
 
 i2c_block_entry init_ak4612_48k_tdm512_vals [] = {
-        {REG_CONTROL_1,{TDM_MODE_1_TDM512 | MODE_23 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
-        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_NORMAL_SPEED_MODE | ACKS_DISABLE | DIV_1}}
+        {REG_PM_1,{0x0E | RSTN_LOW}},
+       {REG_CONTROL_1,{MODE_13 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
+        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_NORMAL_SPEED_MODE | ACKS_DISABLE | DIV_1}},
+        {REG_PM_1,{0x0E | RSTN_HIGH}},
 //        {0x0B,{0}},
 //        {0x0C,{0}},
 //        {0x0D,{0}},
@@ -30,8 +33,10 @@ i2c_block_entry init_ak4612_48k_tdm512_vals [] = {
 
 
 i2c_block_entry init_ak4612_96k_vals [] = {
-        {REG_CONTROL_1,{TDM_MODE_2_TDM256 | MODE_23 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
-        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_DOUBLE_SPEED_MODE | ACKS_DISABLE | DIV_1}}
+        {REG_PM_1,{0x0E | RSTN_LOW}},
+        {REG_CONTROL_1,{MODE_23 | DIGITAL_ATTENUATOR_TRANSITION_4096 | SOFT_MUTE_DAC_FALSE}},
+        {REG_CONTROL_2,{MCKO_ENABLE_TRUE | CK_512_256_128 | SAMPLE_DOUBLE_SPEED_MODE | ACKS_DISABLE | DIV_1}},
+        {REG_PM_1,{0x0E | RSTN_HIGH}},
 //        {0x0B,{0}},
 //        {0x0C,{0}},
 //        {0x0D,{0}},
@@ -40,6 +45,16 @@ i2c_block_entry init_ak4612_96k_vals [] = {
 //        {0x10,{0}},
 //        {0x11,{0}},
 //        {0x12,{0}}
+};
+
+i2c_block_entry reset_ak4612_a [] =
+{
+        {REG_PM_1,{ 0x0E | RSTN_LOW}},
+};
+
+i2c_block_entry reset_ak4612_b [] =
+{
+        {REG_PM_1,{0x0E | RSTN_HIGH}}
 };
 
 #ifdef UNUSED

@@ -92,23 +92,27 @@ void kmi_init(client interface kmi_background_if i,chanend chan_i2c_client){
     internal_oscillator_switch_to();
 //    internal_oscillator_shut_off();
 
-
+#ifndef XSCOPE_MODE_1_BUG
     printstr("oscillator source is: ");
     if (oscillator_source())
         printstr("internal\n");
     else
         printstr("external\n");
+#endif
+
 
     if (!init_clock(DEFAULT_OSC_REGS,0,187,i))
         printstr("unable to init clock chip\n");
     else
         external_oscillator_switch_to();
 
+#ifndef XSCOPE_MODE_1_BUG
     printstr("oscillator source is: ");
     if (oscillator_source())
         printstr("internal\n");
     else
         printstr("external\n");
+#endif
 
 //    debug_i2c_test(i);
 
@@ -126,7 +130,10 @@ void kmi_init(client interface kmi_background_if i,chanend chan_i2c_client){
 
     if (DFU_reset_override != 0x11042011)  // qqq
     {
+#ifndef DEV_VERSION
+        printstr("serve_remote_firmware_update");
         serve_remote_firmware_update(i,chan_i2c_client);
+#endif
     }
 
 

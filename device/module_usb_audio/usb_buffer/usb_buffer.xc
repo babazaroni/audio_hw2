@@ -416,7 +416,7 @@ void buffer(register chanend c_aud_out, register chanend c_aud_in, chanend c_aud
 
 //    set_power_test_state(KS_ANNOUNCE_READY,1*SEC);
 #ifdef POWER_CYCLE_LOW_HIGH_TIME
-    set_power_test_state(KS_TEST_LOW_START2,POWER_CYCLE_LOW_HIGH_TIME);
+    set_power_test_state(KS_TEST_LOW_START,POWER_CYCLE_LOW_HIGH_TIME);
     //    set_power_test_state(KS_TEST_HIGH_START,POWER_CYCLE_LOW_HIGH_TIME);
 #else
     power_test_time = 0;
@@ -481,6 +481,8 @@ void buffer(register chanend c_aud_out, register chanend c_aud_in, chanend c_aud
                         * core locked, it must stay responsive to packets (MIDI etc) and SOFs.  So, set a flag and check for
                         * handshake elsewhere */
                         dfu_debug_put_c(32);
+                        dfu_debug_put_c(sampleFreq);
+
                         SET_SHARED_GLOBAL(g_freqChange_sampFreq, sampleFreq);
                     }
                     else if(cmd == SET_STREAM_FORMAT_IN)
@@ -881,7 +883,7 @@ void buffer(register chanend c_aud_out, register chanend c_aud_in, chanend c_aud
 //                                    power_change_high();
                                     set_power_test_state(KS_SHARC_BOOT_START,SEC/10);
 #ifdef POWER_CYCLE_LOW_HIGH_TIME
- //   set_power_test_state(KS_TEST_LOW_START,POWER_CYCLE_LOW_HIGH_TIME);
+    set_power_test_state(KS_TEST_LOW_START,POWER_CYCLE_LOW_HIGH_TIME);
 #endif
 
                                     break;

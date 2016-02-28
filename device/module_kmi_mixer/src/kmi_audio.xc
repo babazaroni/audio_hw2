@@ -90,7 +90,7 @@ int init_codecs(int sample_freq,client interface kmi_background_if i)
         if (!block_init(I2C_ADDRESS_CODEC,init_ak4612_48k_vals,INIT_AK4612_48K_COUNT,i))
             return 0;
 #endif
-        if (!block_init(I2C_ADDRESS_DAC,init_lm49450_48k_vals,7,i))
+        if (!block_init(I2C_ADDRESS_DAC,init_lm49450_48k_vals,8,i))
             return 0;
         break;
 
@@ -98,18 +98,30 @@ int init_codecs(int sample_freq,client interface kmi_background_if i)
     case 96000:
         if (!block_init(I2C_ADDRESS_CODEC,init_ak4612_96k_vals,INIT_AK4612_96K_COUNT,i))
             return 0;
-        if (!block_init(I2C_ADDRESS_DAC,init_lm49450_96k_vals,7,i))
+        if (!block_init(I2C_ADDRESS_DAC,init_lm49450_96k_vals,8,i))
             return 0;
         break;
     }
 #else
-    if (!block_init(I2C_ADDRESS_CODEC,init_ak4612_96k_vals,2,i))
+    if (!block_init(I2C_ADDRESS_CODEC,init_ak4612_96k_vals,INIT_AK4612_96K_COUNT,i))
         return 0;
-    if (!block_init(I2C_ADDRESS_DAC,init_lm49450_96k_vals,7,i))
+    if (!block_init(I2C_ADDRESS_DAC,init_lm49450_96k_vals,8,i))
         return 0;
 #endif
 
     return 1;
+
+}
+
+void reset_codecs(client interface kmi_background_if i)
+{
+    timer t;int time;
+    t :> time;
+    t when timerafter(time+10000000) :> void;
+    block_init(I2C_ADDRESS_CODEC,reset_ak4612_a,1,i);
+    t :> time;
+    t when timerafter(time+10000000) :> void;
+    block_init(I2C_ADDRESS_CODEC,reset_ak4612_b,1,i);
 
 }
 
@@ -872,7 +884,7 @@ sindex++;
 //                 I2S_O(SLOT_TX_8,1)
 
             }
-            while (*ptr);
+            while (!*ptr);
 
     }
 
@@ -1959,6 +1971,8 @@ void change_sample_rate(unsigned int sample_freq,unsigned int full_flag,client i
         for(;;);
         break;
     }
+
+//    reset_codecs(i);
 }
 
 void set_i2sx_input_port()
@@ -2045,7 +2059,12 @@ void kmi_audio(chanend c_mix_out,client interface kmi_background_if i)
        audio_state.curSamFreq = DEFAULT_FREQ;
 
 
+             timer t; unsigned time;
+             t :> time;
+             t when timerafter(time+10000000) :> void;
+
        change_sample_rate(audio_state.curSamFreq,1,i);
+
 
        if (DFU_reset_override != 0x11042011)  // qqq
         {
@@ -2140,7 +2159,12 @@ void kmi_audio(chanend c_mix_out,client interface kmi_background_if i)
                  break;
          }
 
-         dfu_debug_put_c(34);
+//         dfu_debug_put_c(audio_state.command);
+
+#ifdef XSCOPE_MODE_1_BUG
+         xscope_int(XSCOPE_MODE_1_COMMAND,audio_state.command);
+#endif
+
 
          if (audio_state.command == SET_SAMPLE_FREQ)
          {
@@ -2170,6 +2194,11 @@ void kmi_audio(chanend c_mix_out,client interface kmi_background_if i)
 #ifdef XSCOPE_DEBUG_POWER
                 xscope_int(XSCOPE_POWER_SAMPFREQ,audio_state.curSamFreq2);
 #endif
+
+#ifdef XSCOPE_MODE_1_BUG
+         xscope_int(XSCOPE_MODE_1_COMMAND,audio_state.curSamFreq2);
+#endif
+
                 audio_state.curSamFreq = audio_state.curSamFreq2;
                 sample_rate.changes[sample_rate.count++ & 15] = audio_state.curSamFreq;
 

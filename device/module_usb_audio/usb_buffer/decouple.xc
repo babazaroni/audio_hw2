@@ -274,6 +274,13 @@ __builtin_unreachable();
 #else
                     int sample = inuint(c_mix_out);
 #endif
+
+#ifdef XSCOPE_MODE_1_BUG
+                    if (i==0)
+                        xscope_int(XSCOPE_MODE_1_AUDIO,sample);
+#endif
+
+
 #if(INPUT_VOLUME_CONTROL == 1)
 #if !defined(IN_VOLUME_IN_MIXER)
                     /* Apply volume */

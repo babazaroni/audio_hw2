@@ -14,7 +14,7 @@ BUILD_FLAGS     = -DFLASH_MAX_UPGRADE_SIZE=64*1024 -fcomment-asm -Xmapper --map 
 
 
 
-XCC_FLAGS_hw2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS) -DKMI -DMIDI -DIAPx
+XCC_FLAGS_hw2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS) -DKMI -DMIDI -DIAPx -DDEV_VERSIONx  -DDISPLAY_VERSIONx
  
 
 
@@ -22,7 +22,7 @@ XCC_FLAGS_hw2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS) -DKMI -DMI
 # modules will extend the SOURCE_DIRS, INCLUDE_DIRS and LIB_DIRS variables. 
 # Modules are expected to be in the directory above the BASE_DIR directory.
 # USED_MODULES = module_usb_shared module_xud module_usb_audio module_spdif_tx module_spdif_rx module_usb_midi module_dfu module_i2c_single_port module_usb_device
-USED_MODULES = module_usb_shared module_xud module_usb_audio  module_dfu module_i2c_master module_usb_device module_kmi_mixer   module_usb_midi module_i2c_msi module_locks module_flash2 module_spi_master # module_i2c_xstream 
+USED_MODULES = module_usb_shared module_xud module_usb_audio  module_dfu module_i2c_master module_usb_device module_kmi_mixer   module_usb_midi module_i2c_msi module_locks module_flash2 module_spi_master # module_iap # module_i2c_xstream 
 
 MODULE_LIBRARIES = xud_s
 

@@ -56,6 +56,8 @@
 //extern r_i2c r_i2c_if;
 
 
+#define BLOCK_ENTRY_COUNT(var) sizeof(var)/sizeof(i2c_block_entry)
+
 typedef struct  {unsigned char reg,single_val_array[1];} i2c_block_entry;
 int block_init(int bus_address,i2c_block_entry block[],int count,client interface kmi_background_if i);
 void test_i2c_lines(void);

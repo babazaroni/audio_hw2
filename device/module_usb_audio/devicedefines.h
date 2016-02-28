@@ -358,8 +358,11 @@
  */
 
 #ifdef KMI
-//#define PRODUCT_STR "K-MIX "BUILD_STRING(BUILD_NUM)
+#ifdef DISPLAY_VERSION
+#define PRODUCT_STR "K-Mix "BUILD_STRING(BUILD_NUM)
+#else
 #define PRODUCT_STR "K-Mix"
+#endif
 #endif
 
 

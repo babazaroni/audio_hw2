@@ -3,6 +3,7 @@
 
 #include "i2c_app.h"
 
+#define REG_PM_1         0x00
 #define REG_CONTROL_1   0x03
 #define REG_CONTROL_2   0x04
 
@@ -46,18 +47,34 @@
 #define ACKS_DISABLE    (0 << 1)
 #define ACKS_ENABLE     (1 << 1)
 
+#define RSTN_LOW    (0 << 0)
+#define RSTN_HIGH   (1 << 0)
+
 #define DIV_1   (0)
 #define DIV_2   (1)
 
-#define MODE_23     (LRCK_RISE | O_24L_I_24L)
+#define MODE_23     (TDM_MODE_2_TDM256 | LRCK_RISE | O_24L_I_24L)
+#define MODE_13     (TDM_MODE_1_TDM512 | LRCK_RISE | O_24L_I_24L)
 
 
 extern i2c_block_entry init_ak4612_48k_vals[];
 extern i2c_block_entry init_ak4612_96k_vals[];
 extern i2c_block_entry init_ak4612_48k_tdm512_vals [];
 
-#define INIT_AK4612_48K_COUNT   2
-#define INIT_AK4612_96K_COUNT   2
+extern i2c_block_entry reset_ak4612_a[];
+extern i2c_block_entry reset_ak4612_b[];
+
+#ifdef DEV_VERSION
+
+#define INIT_AK4612_48K_COUNT   4
+#define INIT_AK4612_96K_COUNT   4
+
+#else
+
+#define INIT_AK4612_48K_COUNT   3
+#define INIT_AK4612_96K_COUNT   3
+
+#endif
 
 
 

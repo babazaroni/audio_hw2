@@ -310,6 +310,10 @@ void usb_audio_core(chanend c_mix_out
 #endif
 #ifdef KMI
 //    chan c_meta_ctl;
+
+    timer t;int time;
+    t :>time;
+    t when timerafter(time+100000000) :> void;
 #endif
 
     par

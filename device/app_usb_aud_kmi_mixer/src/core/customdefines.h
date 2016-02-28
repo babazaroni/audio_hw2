@@ -18,7 +18,11 @@
 // COMMON_FLAGS = -DKMI -DMIN_FREQ=44100 -DMAX_FREQ=96000 -DSKIP_FREQ=0 -DKMI_VOLUME_IN_CODECx
 
 #define MIN_FREQ    44100
+#ifdef SAMPLE_RATE_4400_ONLY
+#define MAX_FREQ    44100
+#else
 #define MAX_FREQ    96000
+#endif
 #define SKIP_FREQ   0
 #define KMI_VOLUME_IN_CODECx
 
@@ -36,10 +40,11 @@
 //#define REPORT_WRONG_SAMPLE_RATE    22050
 
 #define DO_FIRMWARE_CHECK_ON_STARTUP
+//#define DEBUG_SHARC_BOOT   // sends the config command to the shark
 
-#define BUILD_NUM   0x102
+#define BUILD_NUM   0x103
 
-#define BUILD_STRING2(num) "B"#num
+#define BUILD_STRING2(num) #num"C"
 #define BUILD_STRING(num) BUILD_STRING2(num)
 
 //XCC_FLAGS_hw2_pdn2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS)  -DMIDI -DPDN2
@@ -115,7 +120,11 @@
 
 /* Maximum frequency device runs at */
 #ifndef MAX_FREQ
+#ifdef SAMPLE_RATE_4400_ONLY
+#define MAX_FREQ                    MIN_FREQ
+#else
 #define MAX_FREQ                    (96000)
+#endif
 #endif
 
 /* Index of SPDIF TX channel (duplicated DAC channels 1/2) */
@@ -125,9 +134,11 @@
 /* Audio Class 1.0 friendly freq */
 
 #ifndef DEFAULT_FREQ
-//#define DEFAULT_FREQ                MIN_FREQ
-//#define DEFAULT_FREQ                MAX_FREQ
-#define DEFAULT_FREQ                96000
+#ifdef SAMPLE_RATE_4400_ONLY
+#define DEFAULT_FREQ                MIN_FREQ
+#else
+#define DEFAULT_FREQ                MAX_FREQ
+#endif
 #endif
 //:
 /***** Defines relating to USB descriptors etc *****/
