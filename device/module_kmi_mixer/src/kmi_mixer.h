@@ -39,7 +39,7 @@ void i2c_msi_set_address(int address);
 void kmi_audio(chanend c_mix_out,client interface kmi_background_if i);
 
 
-void kmi_background(server interface kmi_background_if i[2],chanend chan_i2c_client[NLINK],chanend chan_i2c_server[NLINK],unsigned NLINK,int i2c_address_slave);
+void kmi_background(server interface kmi_background_if i[2],I2C_CLIENT_SERVER_ARGS,int i2c_address_slave);
 
 
 unsigned short lib_build_num_request__bin_type(void *unsafe ptr);

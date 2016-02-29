@@ -173,9 +173,7 @@ void app_task(
         client startkit_led_if ?i_led,
         client startkit_button_if ?i_button,
         chanend ?chan_error,
-        chanend chan_client[NTX],
-        chanend chan_server[NTX],
-        unsigned int NTX
+        I2C_CLIENT_SERVER_ARGS
 )
 {
 #if defined(SIGNAL_MONITOR)
@@ -597,6 +595,7 @@ int main(void)
 #endif
 
 #if defined(XSCOPE)
+            printstr("xscope enabled");
             xscope_register(XSCOPE_REGISTER);
             xscope_config_io(XSCOPE_IO_BASIC);
 #endif

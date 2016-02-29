@@ -14,6 +14,18 @@
 #define ENABLE_CODECS
 
 
+#ifdef AUDIO_SIGS_CONTINUOUS
+
+#define AUDIO_MODE_TDM256_I2S       1
+#define AUDIO_MODE_TDM512_I2S       3
+#define AUDIO_MODE_TDM256           0
+#define AUDIO_MODE_TDM512           2
+
+#define AUDIO_MODE_RESYNC_BIT       4
+
+#endif
+
+
 #define SINE_COUNT  64
 
 #define I2S_STATE_0     0x33223322

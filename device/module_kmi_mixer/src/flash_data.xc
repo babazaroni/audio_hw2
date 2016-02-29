@@ -409,6 +409,9 @@ void serve_remote_firmware_update(client interface kmi_background_if i,chanend c
     timer srfu_timer;
     unsigned srfu_time;
 
+    printstr("serve_remote_firmware_update");
+
+
 #if 0
     srfu_timer :> srfu_time;
     srfu_time += 200000000;  // wait for update commands from 8051

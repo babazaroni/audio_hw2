@@ -1016,9 +1016,13 @@ void decouple(chanend c_mix_out,
                 xscope_int(XSCOPE_POWER_SAMPFREQ,sampFreq);
 #endif
 
+#ifdef AUDIO_SIGS_CONTINUOUS
+                // set audio state here
+#else
                 inuint(c_mix_out);
                 outct(c_mix_out, SET_SAMPLE_FREQ);
                 outuint(c_mix_out, sampFreq);
+#endif
 
                 inOverflow = 0;
                 inUnderflow = 1;
@@ -1047,12 +1051,14 @@ void decouple(chanend c_mix_out,
                     outOverflow = 0;
                 }
 
-
+#ifdef AUDIO_SIGS_CONTINUOUS
+#else
                 outuint(c_mix_out,0);   // sync for sharc boot
 
 
                 /* Wait for handshake back and pass back up */
                 chkct(c_mix_out, XS1_CT_END);
+#endif
 
 //                for(;;);
 
@@ -1062,6 +1068,12 @@ void decouple(chanend c_mix_out,
                 speedRem = 0;
 
                 ENABLE_INTERRUPTS();
+
+
+#ifdef AUDIO_SIGS_CONTINUOUS
+                // set audio state here
+#endif
+
 
 #ifdef XSCOPE_DEBUG_POWER // 3
                 xscope_int(XSCOPE_POWER,3);
@@ -1124,7 +1136,9 @@ void decouple(chanend c_mix_out,
 
 
                 /* Change in OUT channel count - note we expect this on every stream start event */
+
                 DISABLE_INTERRUPTS();
+
                 SET_SHARED_GLOBAL(g_freqChange_flag, 0);
                 GET_SHARED_GLOBAL(g_numUsbChan_Out, g_formatChange_NumChans);
                 GET_SHARED_GLOBAL(g_curSubSlot_Out, g_formatChange_SubSlot);
@@ -1152,7 +1166,16 @@ void decouple(chanend c_mix_out,
                 }
 #endif
 
-#ifndef KMI
+#ifdef AUDIO_SIGS_CONTINUOUS
+
+                SET_SHARED_GLOBAL(g_freqChange, 0);
+                ENABLE_INTERRUPTS();
+
+                // set audio state here  AUDIO_MODE_RESYNC_BIT
+
+#else
+
+//#ifndef KMI
                 /* Wait for the audio code to request samples and respond with command */
                 inuint(c_mix_out);
                 outct(c_mix_out, SET_STREAM_FORMAT_OUT);
@@ -1165,11 +1188,12 @@ void decouple(chanend c_mix_out,
 
                 /* Wait for handshake back */
                 chkct(c_mix_out, XS1_CT_END);
-#endif
+//#endif
                 asm("outct res[%0],%1"::"r"(buffer_c_audioControl),"r"(XS1_CT_END));
 
                 SET_SHARED_GLOBAL(g_freqChange, 0);
                 ENABLE_INTERRUPTS();
+#endif
             }
         }
 

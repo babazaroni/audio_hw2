@@ -482,8 +482,14 @@ int main()
 
 #ifdef KMI
     interface kmi_background_if kmi_background_if[2];
+#if I2C_TX_INTERFACE_COUNT > 1
     chan chan_i2c_client[I2C_TX_INTERFACE_COUNT];
     chan chan_i2c_server[I2C_TX_INTERFACE_COUNT];
+#else
+    chan chan_i2c_client;
+    chan chan_i2c_server;
+
+#endif
 #endif
 
 
@@ -502,10 +508,10 @@ par  // par1
             par  // par2
             {
  //               int nrx = I2C_RX_INTERFACE_COUNT;
-                kmi_background(kmi_background_if,chan_i2c_client,chan_i2c_server,I2C_TX_INTERFACE_COUNT,I2C_ADDRESS_XMOS);  // server for i_i2c_msi_tx
+                kmi_background(kmi_background_if,I2C_CLIENT_SERVER_PASS_X(I2C_TX_INTERFACE_COUNT),I2C_ADDRESS_XMOS);  // server for i_i2c_msi_tx
                 { // brace2
 
-                    kmi_init(kmi_background_if[0],chan_i2c_client[0]);
+                    kmi_init(kmi_background_if[0],I2C_CLIENT_USE(0));
 
 
                     par  // par3
@@ -526,8 +532,8 @@ par  // par1
                                 , c_mix_ctl
 #endif
 #ifdef KMI
-                                , chan_i2c_client[I2C_TX_INTERFACE_1]
-                                , chan_i2c_server[I2C_TX_INTERFACE_1]
+                                , I2C_CLIENT_USE(I2C_TX_INTERFACE_1)
+                                , I2C_SERVER_USE(I2C_TX_INTERFACE_1)
                                 , kmi_background_if[1]
 #endif
                         );

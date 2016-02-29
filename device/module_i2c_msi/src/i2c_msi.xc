@@ -307,7 +307,7 @@ void i2c_clear_state(void)
 
 }
 
-void initiate_start(chanend chan_client[NTX],chanend chan_server[NTX],unsigned int NTX);
+void initiate_start(I2C_CLIENT_SERVER_ARGS);
 
 
 
@@ -353,7 +353,7 @@ void i2c_msi_suspend_clear()
 extern void i2c_slave_rx(SERVER_SLAVE);
 extern void i2c_master_rx(SERVER_SLAVE,int user_id);
 
-void i2c_rx_check(chanend chan_client[NTX],unsigned int NTX)
+void i2c_rx_check(I2C_CLIENT_ARGS)
 {
     if (i2cx.data_rx_count)
     {
@@ -364,7 +364,7 @@ void i2c_rx_check(chanend chan_client[NTX],unsigned int NTX)
             DEBUG_PUT_VAL(DEBUG_SLAVE_EVENT_RX,i2cx.data_rx_count);
 
             slave_event_buffer_push(SLAVE_EVENT_RX,slave_rx_info.buffer_rx,slave_rx_info.count);
-            outct (chan_client[0], XS1_CT_END );
+            outct (I2C_CLIENT_USE(0), XS1_CT_END );
 //            i_i2c_msi_rx.notify_slave_event();
 
 //            i2c_slave_rx(SERVER_SLAVE_PASS);
@@ -396,26 +396,6 @@ int start_count = 0;
 #define SCL_FALL    1
 
 
-void initiate_start(chanend chan_client[NTX],chanend chan_server[NTX],unsigned int NTX)
-{
-    start_count++;
-
-    DEBUG_PUT_STATE(DEBUG_START_ASSERTED);
-
-    t_i2c :> scl_time;
-
-    select {
-        case t_i2c when timerafter(scl_time+300) :> scl_time:  // enforce delay between stop and start here
-            SDA_LOW(4)  // cause a start
-            rx_start_bit_init(MASTER_ENABLE);
-            break;
-
-        case _i2c__port_sda when pinseq(0) :> _i2c__sda:  // while we were waiting, a start was detected
-            rx_start_bit_init(MASTER_DISABLE);
-            break;
-    }
-    i2c_msi_bit(SCL_FALL,chan_client,chan_server,NTX);
-}
 
 
 
@@ -423,7 +403,7 @@ void initiate_start(chanend chan_client[NTX],chanend chan_server[NTX],unsigned i
 
 
 
-void i2c_tx_queue_check(chanend chan_client[NTX],chanend chan_server[NTX],unsigned int NTX)
+void i2c_tx_queue_check(I2C_CLIENT_SERVER_ARGS)
 {
     if (!ACTIVE)
     {
@@ -434,7 +414,7 @@ void i2c_tx_queue_check(chanend chan_client[NTX],chanend chan_server[NTX],unsign
                 xscope_int(XSCOPE_SERVE_MIDI_FROM_HOST,13);
 #endif
 //            DEBUG_PUT_VAL(DEBUG_QUEUE_TX,i2c_queue.count*10000 + i2c_queue.back*100 + i2c_queue.front);
-            initiate_start(chan_client,chan_server,NTX);
+            initiate_start(I2C_CLIENT_SERVER_PASS);
         }
     }
 }
@@ -594,7 +574,7 @@ void sequence_to_next_transfer(){
 
 extern int debug_count_stop;
 
-void push_master_event(int ack_state,int event,chanend chan_client[NTX],unsigned int NTX)
+void push_master_event(int ack_state,int event,I2C_CLIENT_ARGS)
 {
 
 
@@ -604,7 +584,7 @@ void push_master_event(int ack_state,int event,chanend chan_client[NTX],unsigned
     {
         i2cx.ack_state = ack_state;
         master_event_buffer_push(index,event,i2cx.master_ptr,i2cx.data_rx_count,i2cx.user_id);
-        outct (chan_client[index], XS1_CT_END );
+        outct (I2C_CLIENT_USE(index), XS1_CT_END );
     }
 }
 
@@ -629,7 +609,7 @@ int data_count = 0;
 
 //#define I2C_FILTER_SDA
 
-void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX],unsigned int NTX)
+void i2c_msi_bit(int bit_state,I2C_CLIENT_SERVER_ARGS)
 {
     for(;;)
     {
@@ -662,7 +642,7 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
                             i2c_wait(50);
                             SCL_LOW(0)
 
-                            push_master_event(I2C_NAK,MASTER_EVENT_TX,chan_client,NTX);
+                            push_master_event(I2C_NAK,MASTER_EVENT_TX,I2C_CLIENT_PASS);
 
                             sequence_to_next_transfer();
                             return;
@@ -699,7 +679,7 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
 #pragma ordered
                      select
                      {
-                        case inct_byref (chan_server[int i], tmp ): // receive notification
+                        case inct_byref (I2C_SERVER_SELECT, tmp ): // receive notification
                             DATA_BIT = 2;
                             break;
 
@@ -831,7 +811,7 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
                                 {
                                     SDA_RELEASE     // indicate no more bytes to read
 
-                                    push_master_event(I2C_ACK,MASTER_EVENT_RX,chan_client,NTX);
+                                    push_master_event(I2C_ACK,MASTER_EVENT_RX,I2C_CLIENT_PASS);
 
                                     sequence_to_next_transfer();
                                     return;
@@ -886,8 +866,8 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
                                           unsafe {i2cx.data_tx = i2cx.data_tx_orig = i2cx.master_ptr[i2cx.tx_index];i2cx.tx_index++;}
                                      } else
                                      {
-                                         i2c_rx_check(chan_client,NTX);
-                                          push_master_event(I2C_ACK,MASTER_EVENT_TX,chan_client,NTX);
+                                         i2c_rx_check(I2C_CLIENT_PASS);
+                                          push_master_event(I2C_ACK,MASTER_EVENT_TX,I2C_CLIENT_PASS);
                                           sequence_to_next_transfer();
                                           return;
                                      }
@@ -918,7 +898,7 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
                     bit_state = SCL_RISE;
                 } else
                 {
-                    i2c_rx_check(chan_client,NTX);
+                    i2c_rx_check(I2C_CLIENT_PASS);
 //                    i_i2c_msi_rx.startstop();
 
                     if (_i2c__sda)  // rx stop bit
@@ -937,8 +917,29 @@ void i2c_msi_bit(int bit_state,chanend chan_client[NTX],chanend chan_server[NTX]
         }
     }
 }
+void initiate_start(I2C_CLIENT_SERVER_ARGS)
+{
+    start_count++;
 
-select i2c_msi_start_select(chanend chan_poke_client[NTX],chanend chan_poke_server[NTX],unsigned int NTX)
+    DEBUG_PUT_STATE(DEBUG_START_ASSERTED);
+
+    t_i2c :> scl_time;
+
+    select {
+        case t_i2c when timerafter(scl_time+300) :> scl_time:  // enforce delay between stop and start here
+            SDA_LOW(4)  // cause a start
+            rx_start_bit_init(MASTER_ENABLE);
+            break;
+
+        case _i2c__port_sda when pinseq(0) :> _i2c__sda:  // while we were waiting, a start was detected
+            rx_start_bit_init(MASTER_DISABLE);
+            break;
+    }
+    i2c_msi_bit(SCL_FALL,I2C_CLIENT_SERVER_PASS);
+}
+
+
+select i2c_msi_start_select(I2C_CLIENT_SERVER_ARGS)
 {
     case _i2c__port_sda when pinseq(0) :> _i2c__sda:
         ACTIVE = 1;
@@ -946,14 +947,14 @@ select i2c_msi_start_select(chanend chan_poke_client[NTX],chanend chan_poke_serv
         rx_start_bit_init(MASTER_DISABLE);
 
 
-        i2c_msi_bit(SCL_FALL,chan_poke_client,chan_poke_server,NTX);
+        i2c_msi_bit(SCL_FALL,I2C_CLIENT_SERVER_PASS);
 
         break;
 
 
 }
 
-select i2c_msi_bus_select(chanend chan_poke_client[NTX],unsigned int NTX)
+select i2c_msi_bus_select(I2C_CLIENT_ARGS)
 {
 #ifdef UNUSED
            case (scl_release_check(SLAVE && !MASTER && !SUSPENDED) ) => _i2c__port_scl when pinseq(1) :> _i2c__scl:

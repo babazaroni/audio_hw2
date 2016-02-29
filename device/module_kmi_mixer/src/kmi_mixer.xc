@@ -131,7 +131,6 @@ void kmi_init(client interface kmi_background_if i,chanend chan_i2c_client){
     if (DFU_reset_override != 0x11042011)  // qqq
     {
 #ifndef DEV_VERSION
-        printstr("serve_remote_firmware_update");
         serve_remote_firmware_update(i,chan_i2c_client);
 #endif
     }
@@ -213,7 +212,7 @@ extern void stop_here();
 
 #define BLINK_LEDS
 
-void kmi_background(server interface kmi_background_if i[2],chanend chan_i2c_client[NLINK],chanend chan_i2c_server[NLINK],unsigned NLINK,int i2c_address_slave){
+void kmi_background(server interface kmi_background_if i[2],I2C_CLIENT_SERVER_ARGS,int i2c_address_slave){
     unsigned char tmp;
     unsigned boot_debug_time = 0;
     timer boot_debug_timer;
@@ -250,7 +249,7 @@ void kmi_background(server interface kmi_background_if i[2],chanend chan_i2c_cli
 #ifdef XSCOPE_DEBUG_MIDI
 //                xscope_int(XSCOPE_SERVE_MIDI_FROM_HOST,12);
 #endif
-            i2c_tx_queue_check(chan_i2c_client,chan_i2c_server,NLINK);
+            i2c_tx_queue_check(I2C_CLIENT_SERVER_PASS);
 
  #pragma ordered
             select
@@ -270,7 +269,7 @@ void kmi_background(server interface kmi_background_if i[2],chanend chan_i2c_cli
                      break;
 #endif
 
-                case inct_byref (chan_i2c_server[int i], tmp ): // receive notification
+                case inct_byref (I2C_SERVER_SELECT, tmp ): // receive notification
 #ifdef XSCOPE_DEBUG_MIDI
                 xscope_int(XSCOPE_SERVE_MIDI_FROM_HOST,10);
 #endif
@@ -331,7 +330,6 @@ void kmi_background(server interface kmi_background_if i[2],chanend chan_i2c_cli
                         i2c_square_wave(400);
                     break;
 #endif
-                case i2c_msi_start_select(chan_i2c_client,chan_i2c_server,NLINK);
              }
          } else
          {

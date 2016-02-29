@@ -1,3 +1,4 @@
+
 #include <print.h>
 #include <xscope.h>
 #include "customdefines.h"
@@ -537,6 +538,404 @@ unsigned deliver_tdm_512(chanend c_out)
 }
 
 
+#ifdef AUDIO_SIGS_CONTINUOUS
+
+inline void resynch()
+{
+    config_audio_ports();
+    config_tdm_ports();
+     config_i2s_ports();
+
+//                     sync_feedback_c();
+
+
+#ifdef MASTER_XMOS
+synchronize_i2s_tdm(2,4);
+start_clock( CLK_TDM_BCLK );
+start_clock( CLK_I2S_BCLK );
+#else
+synchronize_i2s_tdm(sync_delay.tdm_bit,sync_delay.tdm_sys,sync_delay.i2s);
+asm("nop;nop;");
+start_clock( CLK_TDM_BCLK );
+start_clock( CLK_I2S_BCLK );
+#endif
+
+}
+
+unsafe{
+
+void deliver_all(chanend c_out,volatile unsigned *unsafe mode)
+{
+    register unsigned int dac_buffer_address;
+    register unsigned int adc_buffer_address;
+    register int sample;
+
+    outuint(c_out, 0);
+
+    dac_buffer_address = inuint( c_out );
+    adc_buffer_address = inuint( c_out);
+
+    for(;;)
+    {
+
+        if (*mode == AUDIO_MODE_TDM256_I2S){
+                                            resynch();
+                                            do {
+
+                                                P_I2SX <: I2S_STATE_16;
+                                                P_I2SX <: I2S_STATE_17;
+                                                P_I2SX <: I2S_STATE_18;
+                                                P_I2SX <: I2S_STATE_19;
+
+
+                                                TDM_I(SLOT_RX_5)
+                                                TDM_O(SLOT_TX_5,0)
+
+
+                                                P_I2SX <: I2S_STATE_20;
+                                                P_I2SX <: I2S_STATE_21;
+                                                P_I2SX <: I2S_STATE_22;
+                                                P_I2SX <: I2S_STATE_23;
+
+
+                                                TDM_I(SLOT_RX_6)
+                                                TDM_O(SLOT_TX_6,0)
+
+
+                                                P_I2SX <: I2S_STATE_24;
+                                                P_I2SX <: I2S_STATE_25;
+                                                P_I2SX <: I2S_STATE_26;
+                                                P_I2SX <: I2S_STATE_27;
+
+                                                TDM_I(SLOT_RX_7)
+                                                TDM_O(SLOT_TX_7,0)
+
+
+                                                P_I2SX <: I2S_STATE_28;
+                                                P_I2SX <: I2S_STATE_29;
+                                                P_I2SX <: I2S_STATE_30;
+                                                P_I2SX <: I2S_STATE_31;
+
+                                                TDM_I_IGNORE // blank?
+
+                                                I2S_I(SLOT_RX_0)
+                                                I2S_O(SLOT_TX_8,1)
+
+                                                TDM_O(SLOT_TX_0,0)
+
+
+                                                P_I2SX <: I2S_STATE_0;
+                                                P_I2SX <: I2S_STATE_1;
+                                                P_I2SX <: I2S_STATE_2;
+                                                P_I2SX <: I2S_STATE_3;
+
+                                                TDM_I_IGNORE  // blank?
+                                                TDM_O(SLOT_TX_1,0)
+
+
+                                                P_I2SX <: I2S_STATE_4;
+                                                P_I2SX <: I2S_STATE_5;
+                                                P_I2SX <: I2S_STATE_6;
+                                                P_I2SX <: I2S_STATE_7;
+
+                                                TDM_I(SLOT_RX_2)
+                                                TDM_O(SLOT_TX_2,0)
+
+
+                                                P_I2SX <: I2S_STATE_8;
+                                                P_I2SX <: I2S_STATE_9;
+                                                P_I2SX <: I2S_STATE_10;
+                                                P_I2SX <: I2S_STATE_11;
+
+                                                TDM_I(SLOT_RX_3)
+                                                TDM_O(SLOT_TX_3,0x0)
+
+                                                outuint(c_out, 0);
+
+                                                dac_buffer_address = inuint( c_out );
+                                                adc_buffer_address = inuint( c_out);
+
+                                                P_I2SX <: I2S_STATE_12;
+                                                P_I2SX <: I2S_STATE_13;
+                                                P_I2SX <: I2S_STATE_14;
+                                                P_I2SX <: I2S_STATE_15;
+
+                                                TDM_I(SLOT_RX_4)
+
+                                                I2S_I(SLOT_RX_1)
+                                                I2S_O(SLOT_TX_9,1)
+
+                                                TDM_O(SLOT_TX_4,0)
+
+                                            } while (*mode == AUDIO_MODE_TDM256_I2S);
+
+                                            *mode &= ~AUDIO_MODE_RESYNC_BIT;      // clear the force resynch bit
+        }
+
+        if (*mode == AUDIO_MODE_TDM512_I2S){
+                                            resynch();
+                                            do
+                                            {
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I_IGNORE
+                                                TDM_O(SLOT_TX_1,0)
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I(SLOT_RX_2)
+                                                TDM_O(SLOT_TX_2,0)
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I(SLOT_RX_3)
+                                                TDM_O(SLOT_TX_3,0)
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I(SLOT_RX_4)
+                                                TDM_O(SLOT_TX_4,0)
+
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I(SLOT_RX_5)
+                                                TDM_O(SLOT_TX_5,0)
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I(SLOT_RX_6)
+                                                TDM_O(SLOT_TX_6,0)
+
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+
+                                                TDM_I(SLOT_RX_7)
+                                                TDM_O(SLOT_TX_7,0)
+
+                                                outuint(c_out, 0);
+
+                                                dac_buffer_address = inuint( c_out );
+                                                adc_buffer_address = inuint( c_out);
+
+
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+                                                P_I2SX <: I2S_512_LRHI;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+                                                I2S_I(SLOT_RX_1)
+                                                I2S_O(SLOT_TX_9,1)
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O_IGNORE
+
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+                                                P_I2SX <: I2S_512_LRLO;
+
+                                                TDM_I_IGNORE
+                                                TDM_O(SLOT_TX_0,0)
+
+                                                I2S_I(SLOT_RX_0)
+                                                I2S_O(SLOT_TX_8,1)
+
+                                                } while (*mode == AUDIO_MODE_TDM512_I2S);
+
+                                                *mode &= ~AUDIO_MODE_RESYNC_BIT;      // clear the force resynch bit
+
+        }
+
+        if (*mode == AUDIO_MODE_TDM256){
+                                                P_I2SX :> void; // make an input port
+                                                resynch();
+                                                do {
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    outuint(c_out, 0);
+
+                                                    dac_buffer_address = inuint( c_out);
+                                                    adc_buffer_address = inuint( c_out);
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                }while (*mode == AUDIO_MODE_TDM256);
+
+                                                *mode &= ~AUDIO_MODE_RESYNC_BIT;      // clear the force resynch bit
+        }
+
+        if (*mode == AUDIO_MODE_TDM512){
+                                                P_I2SX :> void; // make an input port
+                                                resynch();
+                                                do {
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                    outuint(c_out, 0);
+
+                                                    dac_buffer_address = inuint( c_out);
+                                                    adc_buffer_address = inuint( c_out);
+
+                                                    TDM_I_IGNORE
+                                                    TDM_O_IGNORE
+
+                                                } while (*mode == AUDIO_MODE_TDM512);
+
+                                                *mode &= ~AUDIO_MODE_RESYNC_BIT;      // clear the force resynch bit
+        }
+    }
+}
+}
+#endif
+
 
 unsafe{
 unsigned static deliver_tdm_i2s_512(chanend c_out,volatile unsigned * unsafe ptr)
@@ -546,26 +945,15 @@ unsigned static deliver_tdm_i2s_512(chanend c_out,volatile unsigned * unsafe ptr
     register unsigned int adc_buffer_address;
 
 
-     outuint(c_out, 0);
-    if(testct(c_out))
-    {
-        unsigned command = inct(c_out);
-        // Set clocks low
-#ifdef MASTER_XMOS
-        P_I2SX <: 0;
-#endif
-        return command;
-    }
 
 
 #ifdef ECHO_AUDIO
-    inuint( c_out );
-    adc_buffer_address = dac_buffer_address = inuint( c_out);
+        inuint( c_out );
+        adc_buffer_address = dac_buffer_address = inuint( c_out);
 #else
-    dac_buffer_address = inuint( c_out );
-    adc_buffer_address = inuint( c_out);
+        dac_buffer_address = inuint( c_out );
+        adc_buffer_address = inuint( c_out);
 #endif
-
 
 #ifdef LOOP_COUNT_EXIT
     loop_count = LOOP_COUNT_EXIT;
@@ -902,25 +1290,16 @@ unsigned  deliver_tdm_i2s(chanend c_out,volatile unsigned * unsafe ptr)
     register unsigned int adc_buffer_address;
 
 
-     outuint(c_out, 0);
-    if(testct(c_out))
-    {
-        unsigned command = inct(c_out);
-        // Set clocks low
-#ifdef MASTER_XMOS
-        P_I2SX <: 0;
-#endif
-        return command;
-    }
-
 
 #ifdef ECHO_AUDIO
-    inuint( c_out );
-    adc_buffer_address = dac_buffer_address = inuint( c_out);
+        inuint( c_out );
+        adc_buffer_address = dac_buffer_address = inuint( c_out);
 #else
-    dac_buffer_address = inuint( c_out );
-    adc_buffer_address = inuint( c_out);
+        dac_buffer_address = inuint( c_out );
+        adc_buffer_address = inuint( c_out);
 #endif
+
+
 
 //    return;
 
@@ -2220,6 +2599,11 @@ void kmi_audio(chanend c_mix_out,client interface kmi_background_if i)
               */
              dsdMode = inuint(c_mix_out);
              curSamRes_DAC = inuint(c_mix_out);
+
+             config_system_for_sample_rate(i);
+
+             wait_xc(500000);  // wait 5ms to make similer to initial boot
+
 
              inuint(c_mix_out);
 

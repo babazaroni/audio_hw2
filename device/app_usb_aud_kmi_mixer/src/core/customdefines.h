@@ -37,14 +37,16 @@
 
 #define USE_SPI_MASTER
 
+#define AUDIO_SIGS_CONTINUOUS
+
 //#define REPORT_WRONG_SAMPLE_RATE    22050
 
 #define DO_FIRMWARE_CHECK_ON_STARTUP
 //#define DEBUG_SHARC_BOOT   // sends the config command to the shark
 
-#define BUILD_NUM   0x103
+#define BUILD_NUM   0x104
 
-#define BUILD_STRING2(num) #num"C"
+#define BUILD_STRING2(num) #num"A"
 #define BUILD_STRING(num) BUILD_STRING2(num)
 
 //XCC_FLAGS_hw2_pdn2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS)  -DMIDI -DPDN2

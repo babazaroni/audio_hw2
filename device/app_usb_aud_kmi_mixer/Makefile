@@ -7,14 +7,12 @@ TARGET = kmi_mixer.xn
 APP_NAME =
 
 # The flags passed to xcc when building the application
-BUILD_FLAGS     = -DFLASH_MAX_UPGRADE_SIZE=64*1024 -fcomment-asm -Xmapper --map -Xmapper MAPFILE -Wall -O3 -report  -fsubword-select -save-temps -g -fxscope -DXSCOPEx -DSDA_HIGH=2 -DSCL_HIGH=1 -DXUD_SERIES_SUPPORT=1 -DVERBOSE=1
+BUILD_FLAGS     = -DFLASH_MAX_UPGRADE_SIZE=64*1024 -fcomment-asm -Xmapper --map -Xmapper MAPFILE -Wall -O3 -report  -fsubword-select -save-temps -g -fxscope -DXSCOPE -DSDA_HIGH=2 -DSCL_HIGH=1 -DXUD_SERIES_SUPPORT=1 -DVERBOSE=1
 #BUILD_FLAGS     = -DFLASH_MAX_UPGRADE_SIZE=64*1024 -fcomment-asm -Xmapper --map -Xmapper MAPFILE -Wall -O3 -report -lflash -fsubword-select -save-temps -g  -DSDA_HIGH=2 -DSCL_HIGH=1 -DXUD_SERIES_SUPPORT=1
 
 # Test build configs (Note these make use of the defaults in customdefines.h)
 
-
-
-XCC_FLAGS_hw2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS) -DKMI -DMIDI -DIAPx -DDEV_VERSIONx  -DDISPLAY_VERSIONx
+XCC_FLAGS_hw2 = $(BUILD_FLAGS)  -DSPDIF=0 -save-temps $(COMMON_FLAGS) -DKMI -DMIDI -DIAPx -DDEV_VERSION -DDISPLAY_VERSION
  
 
 

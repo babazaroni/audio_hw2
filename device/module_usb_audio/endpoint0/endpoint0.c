@@ -337,6 +337,8 @@ void Endpoint0(chanend c_ep0_out, chanend c_ep0_in, chanend c_audioControl,
                                 {
                                     g_curStreamAlt_Out = sp.wValue;
 
+//#ifndef KMI
+
                                     /* Send format of data onto buffering */
                                     outuint(c_audioControl, SET_STREAM_FORMAT_OUT);
                                     outuint(c_audioControl, g_dataFormat_Out[sp.wValue-1]);        /* Data format (PCM/DSD) */
@@ -356,6 +358,7 @@ void Endpoint0(chanend c_ep0_out, chanend c_ep0_in, chanend c_audioControl,
 
                                     /* Handshake */
 							        chkct(c_audioControl, XS1_CT_END);
+//#endif
                                 }
                             }
                         }

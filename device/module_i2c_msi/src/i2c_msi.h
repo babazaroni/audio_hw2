@@ -60,6 +60,34 @@ interface i2c_msi_tx_if {
 #define SERVER_SLAVE client interface i2c_msi_rx_if i_i2c_msi_rx
 #define SERVER_SLAVE_PASS i_i2c_msi_rx
 
+#if I2C_TX_INTERFACE_COUNT > 1
+
+#define I2C_CLIENT_SERVER_ARGS          chanend chan_i2c_client[NTX],chanend chan_i2c_server[NTX],unsigned int NTX
+#define I2C_CLIENT_SERVER_ARGS_X(x)     chanend chan_i2c_client[x],chanend chan_i2c_server[x],unsigned int x
+#define I2C_CLIENT_ARGS                 chanend chan_client[NTX],unsigned int NTX
+#define I2C_CLIENT_SERVER_PASS          chan_i2c_client,chan_i2c_server,NTX
+#define I2C_CLIENT_SERVER_PASS_X(x)     chan_i2c_client,chan_i2c_server,x
+#define I2C_CLIENT_PASS                 chan_i2c_client,NTX
+#define I2C_SERVER_SELECT               chan_i2c_server[int i]
+#define I2C_CLIENT_USE(index)           chan_i2c_client[index]
+#define I2C_SERVER_USE(index)           chan_i2c_server[index]
+#define I2C_CLIENt_SERVER_USE(x)        chan_i2c_client[x],chan_i2c_server[x]
+
+
+#else
+#define I2C_CLIENT_SERVER_ARGS          chanend chan_i2c_client,chanend chan_i2c_server
+#define I2C_CLIENT_SERVER_ARGS_X        chanend chan_i2c_client,chanend chan_i2c_server
+#define I2C_CLIENT_ARGS                 chanend chan_i2c_client
+#define I2C_CLIENT_SERVER_PASS          chan_i2c_client,chan_i2c_server
+#define I2C_CLIENT_SERVER_PASS_X(x)     chan_i2c_client,chan_i2c_server
+#define I2C_CLIENT_PASS                 chan_i2c_client
+#define I2C_SERVER_SELECT               chan_i2c_server
+#define I2C_CLIENT_USE(index)           chan_i2c_client
+#define I2C_SERVER_USE(index)           chan_i2c_server
+#define I2C_CLIENT_SERVER_USE(x)        chan_i2c_client,chan_i2c_server
+
+#endif
+
 
 void i2c_msi_init(int i2c_address_slave);
 
@@ -70,7 +98,7 @@ select i2c_msi_bus_active_select(chanend ?chan_poke);
 int i2c_msi_write_reg_buffer(int dest_address, int dest_reg,unsigned char * unsafe buffer, int len,int interface_index);
 int i2c_msi_write_reg_word(int dest_address, int dest_reg,unsigned int data,int interface_index);
 int i2c_msi_read_buffer(int dest_address,unsigned char * unsafe buffer, int len,int interface_index,int read_id);
-void i2c_tx_queue_check(chanend chan_poke_client[NTX],chanend chan_poke_server[NTX],unsigned int NTX);
+void i2c_tx_queue_check(I2C_CLIENT_SERVER_ARGS);
 void i2c_msi_suspend_clear();
 I2C_MSI_EVENT * unsafe master_event_buffer_pop(int index);
 I2C_MSI_EVENT * unsafe slave_event_buffer_pop(void);
@@ -85,12 +113,12 @@ void show_error2(void);
 
 int i2c_msi_bus_free();
 
-select i2c_msi_start_select(chanend chan_poke_client[NTX],chanend chan_poke_server[NTX], unsigned int NTX);
-select i2c_msi_bus_select(chanend chan_poke_client[NTX],unsigned int NTX);
+select i2c_msi_start_select(I2C_CLIENT_SERVER_ARGS);
+select i2c_msi_bus_select(I2C_CLIENT_ARGS);
 //select i2c_msi_user_select(SERVER_SLAVE,server interface i2c_msi_tx_if i_i2c_tx[ntx],unsigned int ntx);
 
 
-void i2c_msi_bit(int bit_state,chanend chan_poke_client[NTX],chanend chan_poke_server[NTX],unsigned int NTX);
+void i2c_msi_bit(int bit_state,I2C_CLIENT_SERVER_ARGS);
 
 #endif /* I2C_MS_H_ */
 
